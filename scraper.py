@@ -26,9 +26,47 @@ def scrap_header_news():
         news.append({"url": news_url, "title": news_title,
                     "section": news_section, "date": news_date})
 
-    pprint(news)
-
     # Row 2 => 4 heading news
+    header_news_r2 = header_rows[1].find_all(
+        "div", class_="mvp-widget-feat1-bot-story left relative")
+
+    for news_block in header_news_r2:
+        news_url = news_block.parent["href"]
+        news_title = news_block.find("h2").get_text()
+        news_section = news_block.find(
+            "span", class_="mvp-cd-cat left relative").get_text().strip()
+        news_date = news_block.find(
+            "span", class_="mvp-cd-date left relative").get_text().replace("::before", "").replace('"', "")
+        news.append({"url": news_url, "title": news_title,
+                    "section": news_section, "date": news_date})
 
 
-scrap_header_news()
+def scrap_news_list():
+    news_list = soup.find_all(
+        "li", class_="mvp-blog-story-wrap left relative infinite-post")
+
+    for news_block in news_list:
+        news_url = news_block.find("a")["href"]
+        news_title = news_block.find("h2").get_text()
+        news_section = news_block.find(
+            "span", class_="mvp-cd-cat left relative").get_text().strip()
+        news_date = news_block.find(
+            "span", class_="mvp-cd-date left relative").get_text().replace("::before", "").replace('"', "")
+        news.append({"url": news_url, "title": news_title,
+                    "section": news_section, "date": news_date})
+
+
+def print_news_formatted():
+    for news_item in news:
+        print(
+            f'{news_item["title"]} [{news_item["section"]}] / {news_item["date"]}')
+        print(f'See more at: {news_item["url"]}')
+        print("-----------------------------------\n")
+
+
+def main():
+    scrap_header_news()
+    scrap_news_list()
+    print_news_formatted()
+
+main()
